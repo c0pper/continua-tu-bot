@@ -20,6 +20,7 @@ def continua_tu(update: Update, context: CallbackContext):
     """Handler for /start command"""
     input_sentence = update.message.text
     if len(input_sentence.split()) > 2:
+        update.message.reply_text("Sto scrivendo...")
         input_sentence = input_sentence.split(' ', 1)[1]
         print(input_sentence)
         output = text_generator(
