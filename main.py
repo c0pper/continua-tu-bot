@@ -52,49 +52,15 @@ def continua_tu(update: Update, context: CallbackContext):
         update.message.reply_text("Uso del bot:")
         update.message.reply_text("'/continuatu Sono andato in bagno, quando all'improvviso'")
 
-        return SENTENCE
-
-
-def sentence(update: Update, context: CallbackContext):
-    input_sentence = update.message.text
-    input_sentence = input_sentence.split(' ', 1)[1]
-    print(input_sentence)
-    output = text_generator(
-        input_sentence,
-        do_sample=True,
-        max_length=random.randint(100, 200),
-        top_k=50,
-        top_p=0.95,
-        num_return_sequences=1
-    )
-    print(output)
-    update.message.reply_text(output[0]["generated_text"])
-
-    return ConversationHandler.END
-
-
-def cancel(update: Update, context: CallbackContext):
-    pass
-
 
 def main():
     """starting bot"""
     updater = Updater(TELE_TOKEN, use_context=True)
 
-    # Add conversation handler with the states GENDER, PHOTO, LOCATION and BIO
-    conv_handler = ConversationHandler(
-        entry_points=[CommandHandler('continuatu', continua_tu), MessageHandler(Filters.regex(r"(continua tu)$"), continua_tu)],
-        states={
-            SENTENCE: [MessageHandler(Filters.text, sentence)]
-        },
-        fallbacks=[CommandHandler('cancel', cancel)],
-    )
-
     # getting the dispatchers to register handlers
     dp = updater.dispatcher
     # registering commands
     dp.add_handler(CommandHandler("continuatu", continua_tu))
-    dp.add_handler(conv_handler)
 
     # starting the bot
     updater.start_polling()
