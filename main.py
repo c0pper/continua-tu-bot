@@ -41,7 +41,6 @@ def continua_tu(update: Update, context: CallbackContext):
     if len(input_sentence.split()) > min_text_lenght:  # il testo è incluso dopo il comando
         if input_sentence[-3:] == "...":
             input_sentence = input_sentence[:-3]
-        input_sentence = input_sentence + " "
         update.message.reply_text("Sto scrivendo...")
         input_sentence = input_sentence.split(' ', 1)[1]
         print(input_sentence)
