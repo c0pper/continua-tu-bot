@@ -14,11 +14,11 @@ logger = logging.getLogger(__name__)
 
 HEROKU_URL = "https://zettibot-witai.herokuapp.com/"
 PORT = int(os.environ.get('PORT', '8433'))
-TELE_TOKEN = "2111353739:AAFecNyq2fsvyahJCBMhJ8RNTlkXupCsrBA"  # os.environ.get('TELE_TOKEN')
+TELE_TOKEN = os.environ.get('TELE_TOKEN')
 
 SENTENCE = range(1)
 
-min_text_lenght = 3
+MIN_TEXT_LEN = 3
 
 
 def generate_text(input_sentence):
@@ -38,7 +38,7 @@ def generate_text(input_sentence):
 def continua_tu(update: Update, context: CallbackContext):
     """Handler for /start command"""
     input_sentence = update.message.text
-    if len(input_sentence.split()) > min_text_lenght:  # il testo è incluso dopo il comando
+    if len(input_sentence.split()) > MIN_TEXT_LEN:  # il testo è incluso dopo il comando
         if input_sentence[-3:] == "...":
             input_sentence = input_sentence[:-3]
         update.message.reply_text("Sto scrivendo...")
