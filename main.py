@@ -68,7 +68,6 @@ def chat_gpt_output_parser(prompt: str, update: Update, context: CallbackContext
             gpt_out = f'{start_msg} {data["message"]}'
         else:
             gpt_out = data["message"]
-        print(gpt_out)
         if gpt_out:
             if idx % 18 == 0:
                 try:
