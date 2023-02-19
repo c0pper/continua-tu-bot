@@ -63,7 +63,9 @@ def chat_gpt_output_parser(prompt: str, update: Update, context: CallbackContext
     reply = update.message.reply_text("Sto scrivendo...")
     gpt_out = ""
     for idx, data in enumerate(chatbot.ask(prompt)):
-        gpt_out = data["message"]
+        if "continuazione" in prompt:
+            start_msg = prompt.split("\n\n")[1]
+            gpt_out = f'{start_msg} {data["message"]}'
         print(gpt_out)
         if gpt_out:
             if idx % 18 == 0:
@@ -88,9 +90,10 @@ def continua_tu_chatGPT(update: Update, context: CallbackContext):
         if input_sentence[-3:] == "...":
             input_sentence = input_sentence[:-3]
         input_sentence = input_sentence.split(' ', 1)[1]
+        prompt = f"Scrivi una continuazione di questo testo\n\n{input_sentence}"
 
-        print(input_sentence)
-        chat_gpt_output_parser(input_sentence, update, context)
+        print(prompt)
+        chat_gpt_output_parser(prompt, update, context)
 
     else:  # è stato scritto solo il comando
         update.message.reply_text("Uso del bot:")
