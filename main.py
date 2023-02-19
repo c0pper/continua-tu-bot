@@ -1,6 +1,9 @@
 import logging
 import os
 import random
+from time import sleep
+
+import telegram.error
 from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import Updater, Dispatcher, CommandHandler, MessageHandler, Filters, CallbackContext, \
     ConversationHandler
@@ -62,14 +65,28 @@ def continua_tu_chatGPT(update: Update, context: CallbackContext):
     if len(input_sentence.split()) > MIN_TEXT_LEN:  # il testo è incluso dopo il comando
         if input_sentence[-3:] == "...":
             input_sentence = input_sentence[:-3]
-        update.message.reply_text("Sto scrivendo...")
         input_sentence = input_sentence.split(' ', 1)[1]
 
         print(input_sentence)
-        for data in chatbot.ask(input_sentence):
-            output = data["message"]
-        print("out", output)
-        update.message.reply_text(output)
+        reply = update.message.reply_text("Sto scrivendo...")
+        gpt_out = ""
+        for idx, data in enumerate(chatbot.ask(input_sentence)):
+            gpt_out = data["message"]
+            print(gpt_out)
+            if gpt_out:
+                if idx % 18 == 0:
+                    try:
+                        context.bot.editMessageText(chat_id=update.message.chat_id,
+                                                    message_id=reply.message_id,
+                                                    text=gpt_out)
+                    except telegram.error.BadRequest:
+                        pass
+        try:
+            context.bot.editMessageText(chat_id=update.message.chat_id,
+                                        message_id=reply.message_id,
+                                        text=gpt_out)
+        except telegram.error.BadRequest:
+            pass
 
     else:  # è stato scritto solo il comando
         update.message.reply_text("Uso del bot:")
