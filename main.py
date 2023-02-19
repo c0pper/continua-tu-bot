@@ -5,6 +5,7 @@ from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import Updater, Dispatcher, CommandHandler, MessageHandler, Filters, CallbackContext, \
     ConversationHandler
 from text_generation import tokenizer, model, text_generator, prompt
+from revChatGPT.V1 import Chatbot
 
 # Enable logging
 logging.basicConfig(
@@ -17,9 +18,12 @@ PORT = int(os.environ.get('PORT', '8433'))
 TELE_TOKEN = os.environ.get('TELE_TOKEN')
 
 SENTENCE = range(1)
-
 MIN_TEXT_LEN = 3
 
+chatbot = Chatbot(config={
+    "email": os.environ.get('chatgpt_login'),
+    "password": os.environ.get('chatgpt_lpw')
+})
 
 def generate_text(input_sentence):
     output = text_generator(
@@ -52,6 +56,26 @@ def continua_tu(update: Update, context: CallbackContext):
         update.message.reply_text("'/continuatu Sono andato in bagno, quando all'improvviso'")
 
 
+def continua_tu_chatGPT(update: Update, context: CallbackContext):
+    input_sentence = update.message.text
+
+    if len(input_sentence.split()) > MIN_TEXT_LEN:  # il testo è incluso dopo il comando
+        if input_sentence[-3:] == "...":
+            input_sentence = input_sentence[:-3]
+        update.message.reply_text("Sto scrivendo...")
+        input_sentence = input_sentence.split(' ', 1)[1]
+
+        print(input_sentence)
+        for data in chatbot.ask(input_sentence):
+            output = data["message"]
+        print("out", output)
+        update.message.reply_text(output)
+
+    else:  # è stato scritto solo il comando
+        update.message.reply_text("Uso del bot:")
+        update.message.reply_text("'/continuatu Sono andato in bagno, quando all'improvviso'")
+
+
 def main():
     """starting bot"""
     updater = Updater(TELE_TOKEN, use_context=True)
@@ -59,7 +83,8 @@ def main():
     # getting the dispatchers to register handlers
     dp = updater.dispatcher
     # registering commands
-    dp.add_handler(CommandHandler("continuatu", continua_tu))
+    dp.add_handler(CommandHandler("continuatu", continua_tu_chatGPT))
+    dp.add_handler(CommandHandler("continuatu_old", continua_tu))
 
     # starting the bot
     updater.start_polling()
