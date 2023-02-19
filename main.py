@@ -69,7 +69,7 @@ def chat_gpt_output_parser(prompt: str, update: Update, context: CallbackContext
         else:
             gpt_out = data["message"]
         if gpt_out:
-            if idx % 18 == 0:
+            if idx % 30 == 0:
                 try:
                     context.bot.editMessageText(chat_id=update.message.chat_id,
                                                 message_id=reply.message_id,
