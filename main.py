@@ -66,6 +66,8 @@ def chat_gpt_output_parser(prompt: str, update: Update, context: CallbackContext
         if "continuazione" in prompt:
             start_msg = prompt.split("\n\n")[1]
             gpt_out = f'{start_msg} {data["message"]}'
+        else:
+            gpt_out = data["message"]
         print(gpt_out)
         if gpt_out:
             if idx % 18 == 0:
@@ -102,20 +104,21 @@ def continua_tu_chatGPT(update: Update, context: CallbackContext):
 
 def get_replied_message_text(update: Update):
     """Handler for /start command"""
-    input_text = update.message.reply_to_message
-    if not input_text:
-        print("input:", input_text)
-        update.message.reply_text("Rispondi a un messaggio con /riassunto per riassumerlo")
-    else:
+    if update.message.reply_to_message:
         input_text = update.message.reply_to_message["text"]
-        return input_text
+    else:
+        input_text = ""
+    return input_text
 
 
 def parere_chatGPT(update: Update, context: CallbackContext):
     input_text = f"esprimi una critica su questo testo\n\n{get_replied_message_text(update)}"
     print("input:", input_text)
     print(update.message)
-    chat_gpt_output_parser(input_text, update, context)
+    if get_replied_message_text(update):
+        chat_gpt_output_parser(input_text, update, context)
+    else:
+        update.message.reply_text("Rispondi al messaggio su cui vuoi in parere con /parere")
 
 
 def main():
