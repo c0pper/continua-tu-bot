@@ -59,6 +59,28 @@ chatbot = Chatbot(config={
 #         update.message.reply_text("'/continuatu Sono andato in bagno, quando all'improvviso'")
 
 
+def chat_gpt_output_parser(prompt: str, update: Update, context: CallbackContext):
+    reply = update.message.reply_text("Sto scrivendo...")
+    gpt_out = ""
+    for idx, data in enumerate(chatbot.ask(prompt)):
+        gpt_out = data["message"]
+        print(gpt_out)
+        if gpt_out:
+            if idx % 18 == 0:
+                try:
+                    context.bot.editMessageText(chat_id=update.message.chat_id,
+                                                message_id=reply.message_id,
+                                                text=gpt_out)
+                except telegram.error.BadRequest:
+                    pass
+    try:
+        context.bot.editMessageText(chat_id=update.message.chat_id,
+                                    message_id=reply.message_id,
+                                    text=gpt_out)
+    except telegram.error.BadRequest:
+        pass
+
+
 def continua_tu_chatGPT(update: Update, context: CallbackContext):
     input_sentence = update.message.text
 
@@ -68,29 +90,29 @@ def continua_tu_chatGPT(update: Update, context: CallbackContext):
         input_sentence = input_sentence.split(' ', 1)[1]
 
         print(input_sentence)
-        reply = update.message.reply_text("Sto scrivendo...")
-        gpt_out = ""
-        for idx, data in enumerate(chatbot.ask(input_sentence)):
-            gpt_out = data["message"]
-            print(gpt_out)
-            if gpt_out:
-                if idx % 18 == 0:
-                    try:
-                        context.bot.editMessageText(chat_id=update.message.chat_id,
-                                                    message_id=reply.message_id,
-                                                    text=gpt_out)
-                    except telegram.error.BadRequest:
-                        pass
-        try:
-            context.bot.editMessageText(chat_id=update.message.chat_id,
-                                        message_id=reply.message_id,
-                                        text=gpt_out)
-        except telegram.error.BadRequest:
-            pass
+        chat_gpt_output_parser(input_sentence, update, context)
 
     else:  # è stato scritto solo il comando
         update.message.reply_text("Uso del bot:")
         update.message.reply_text("'/continuatu Sono andato in bagno, quando all'improvviso'")
+
+
+def get_replied_message_text(update: Update):
+    """Handler for /start command"""
+    input_text = update.message.reply_to_message
+    if not input_text:
+        print("input:", input_text)
+        update.message.reply_text("Rispondi a un messaggio con /riassunto per riassumerlo")
+    else:
+        input_text = update.message.reply_to_message["text"]
+        return input_text
+
+
+def parere_chatGPT(update: Update, context: CallbackContext):
+    input_text = f"esprimi una critica su questo testo\n\n{get_replied_message_text(update)}"
+    print("input:", input_text)
+    print(update.message)
+    chat_gpt_output_parser(input_text, update, context)
 
 
 def main():
@@ -101,6 +123,7 @@ def main():
     dp = updater.dispatcher
     # registering commands
     dp.add_handler(CommandHandler("continuatu", continua_tu_chatGPT))
+    dp.add_handler(CommandHandler("parere", parere_chatGPT))
 
     # starting the bot
     updater.start_polling()
