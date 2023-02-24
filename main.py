@@ -1,7 +1,7 @@
 import logging
 import os
-import random
-from time import sleep
+import datetime
+import pytz
 
 import telegram.error
 from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
@@ -9,8 +9,7 @@ from telegram.ext import Updater, Dispatcher, CommandHandler, MessageHandler, Fi
     ConversationHandler
 # from text_generation import tokenizer, model, text_generator, prompt
 from revChatGPT.V1 import Chatbot
-print(os.environ.get('chatgpt_login'))
-print(os.environ.get('chatgpt_pw'))
+
 # Enable logging
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
@@ -59,6 +58,22 @@ chatbot = Chatbot(config={
 #         update.message.reply_text("'/continuatu Sono andato in bagno, quando all'improvviso'")
 
 
+def check_time(from_: int, to: int):
+    # Set the timezone to Europe/Rome
+    rome_tz = pytz.timezone('Europe/Rome')
+    # Get the current time in Rome
+    current_time = datetime.datetime.now(rome_tz)
+    # Get the hour component of the current time
+    current_hour = current_time.hour
+
+    # Check if the current hour is between 7 and 11 (inclusive)
+    if from_ <= current_hour <= to:
+        # If it is, print a greeting
+        return True
+    else:
+        return False
+
+
 def chat_gpt_output_parser(prompt: str, update: Update, context: CallbackContext):
     reply = update.message.reply_text("Sto scrivendo...")
     gpt_out = ""
@@ -94,7 +109,14 @@ def continua_tu_chatGPT(update: Update, context: CallbackContext):
         prompt = f"Scrivi una continuazione di questo testo\n\n{input_sentence}"
 
         print(prompt)
-        chat_gpt_output_parser(prompt, update, context)
+        if update.message.from_user["id"] != 128727299:
+            chat_gpt_output_parser(prompt, update, context)
+        else:
+            time_is_valid = check_time(7, 12)
+            if time_is_valid:
+                chat_gpt_output_parser(prompt, update, context)
+            else:
+                update.message.reply_text("Lorenzo hai rotto")
 
     else:  # è stato scritto solo il comando
         update.message.reply_text("Uso del bot:")
