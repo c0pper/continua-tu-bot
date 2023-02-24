@@ -109,7 +109,7 @@ def continua_tu_chatGPT(update: Update, context: CallbackContext):
         prompt = f"Scrivi una continuazione di questo testo\n\n{input_sentence}"
 
         print(prompt)
-        if update.message.from_user["id"] != 128727299:
+        if update.message.from_user["id"] != 1748826398:
             chat_gpt_output_parser(prompt, update, context)
         else:
             time_is_valid = check_time(7, 12)
