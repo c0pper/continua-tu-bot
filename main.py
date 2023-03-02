@@ -137,7 +137,14 @@ def parere_chatGPT(update: Update, context: CallbackContext):
     print("input:", input_text)
     print(update.message)
     if get_replied_message_text(update):
-        chat_gpt_output_parser(input_text, update, context)
+        if update.message.from_user["id"] != 1748826398:
+            chat_gpt_output_parser(input_text, update, context)
+        else:
+            time_is_valid = check_time(7, 12)
+            if time_is_valid:
+                chat_gpt_output_parser(input_text, update, context)
+            else:
+                update.message.reply_text("Lorenzo hai rotto")
     else:
         update.message.reply_text("Rispondi al messaggio su cui vuoi in parere con /parere")
 
