@@ -112,7 +112,7 @@ def continua_tu_chatGPT(update: Update, context: CallbackContext):
         if update.message.from_user["id"] != 1748826398:
             chat_gpt_output_parser(prompt, update, context)
         else:
-            time_is_valid = check_time(7, 12)
+            time_is_valid = check_time(16, 18)
             if time_is_valid:
                 chat_gpt_output_parser(prompt, update, context)
             else:
@@ -140,7 +140,7 @@ def parere_chatGPT(update: Update, context: CallbackContext):
         if update.message.from_user["id"] != 1748826398:
             chat_gpt_output_parser(input_text, update, context)
         else:
-            time_is_valid = check_time(7, 12)
+            time_is_valid = check_time(16, 18)
             if time_is_valid:
                 chat_gpt_output_parser(input_text, update, context)
             else:
