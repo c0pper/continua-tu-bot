@@ -79,7 +79,7 @@ def chat_gpt_output_parser(prompt: str, update: Update, context: CallbackContext
     for idx, data in enumerate(chat_gpt_reply):
         if "continuazione" in prompt:
             start_msg = prompt.split("\n\n")[1]
-            msg = start_msg
+            msg = f"{''.join(gpt_out)}"
         else:
             msg = "".join(gpt_out)
         gpt_out.append(data)
