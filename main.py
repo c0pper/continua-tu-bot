@@ -8,7 +8,7 @@ from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import Updater, Dispatcher, CommandHandler, MessageHandler, Filters, CallbackContext, \
     ConversationHandler
 # from text_generation import tokenizer, model, text_generator, prompt
-from revChatGPT.V1 import Chatbot
+from revChatGPT.V3 import Chatbot
 
 # Enable logging
 logging.basicConfig(
@@ -22,10 +22,7 @@ TELE_TOKEN = os.environ.get('TELE_TOKEN')
 SENTENCE = range(1)
 MIN_TEXT_LEN = 3
 
-chatbot = Chatbot(config={
-    "email": f"{os.environ.get('chatgpt_login')}",
-    "password": f"{os.environ.get('chatgpt_pw')}"
-})
+chatbot = Chatbot(api_key=os.environ.get('chatgpt_apikey'))
 
 # def generate_text(input_sentence):
 #     output = text_generator(
@@ -76,31 +73,49 @@ def check_time(from_: int, to: int):
 
 def chat_gpt_output_parser(prompt: str, update: Update, context: CallbackContext):
     reply = update.message.reply_text("Sto scrivendo...")
-    gpt_out = ""
-    for idx, data in enumerate(chatbot.ask(prompt)):
+    gpt_out = []
+    chat_gpt_reply = chatbot.ask(prompt)
+    msg = ""
+    for idx, data in enumerate(chat_gpt_reply):
         if "continuazione" in prompt:
             start_msg = prompt.split("\n\n")[1]
-            gpt_out = f'{start_msg} {data["message"]}'
+            msg = start_msg
         else:
-            gpt_out = data["message"]
-        if gpt_out:
-            if idx % 30 == 0:
-                try:
-                    context.bot.editMessageText(chat_id=update.message.chat_id,
+            msg = "".join(gpt_out)
+        gpt_out.append(data)
+        msg = (msg, "".join(gpt_out))[0]
+        # msg = "".join(list(msg))
+    print(msg)
+    context.bot.editMessageText(chat_id=update.message.chat_id,
                                                 message_id=reply.message_id,
-                                                text=gpt_out)
-                except telegram.error.BadRequest:
-                    pass
-    try:
-        context.bot.editMessageText(chat_id=update.message.chat_id,
-                                    message_id=reply.message_id,
-                                    text=gpt_out)
-    except telegram.error.BadRequest:
-        pass
+                                                text=msg)
+        # if idx % 199 == 0:
+        #     print(idx, len(chat_gpt_reply))
+        #     try:
+        #         context.bot.editMessageText(chat_id=update.message.chat_id,
+        #                                     message_id=reply.message_id,
+        #                                     text=msg)
+        #     except telegram.error.BadRequest:
+        #         pass
+        #
+        #     if idx <= len(chat_gpt_reply):
+        #         try:
+        #             context.bot.editMessageText(chat_id=update.message.chat_id,
+        #                                         message_id=reply.message_id,
+        #                                         text=msg)
+        #         except telegram.error.BadRequest:
+        #             pass
+    # try:
+    #     context.bot.editMessageText(chat_id=update.message.chat_id,
+    #                                 message_id=reply.message_id,
+    #                                 text=msg)
+    # except telegram.error.BadRequest:
+    #     pass
 
 
 def continua_tu_chatGPT(update: Update, context: CallbackContext):
-    input_sentence = update.message.text
+    # input_sentence = update.message.text
+    input_sentence = get_replied_message_text(update)
 
     if len(input_sentence.split()) > MIN_TEXT_LEN:  # il testo è incluso dopo il comando
         if input_sentence[-3:] == "...":
@@ -133,7 +148,7 @@ def get_replied_message_text(update: Update):
 
 
 def parere_chatGPT(update: Update, context: CallbackContext):
-    input_text = f"esprimi una critica su questo testo\n\n{get_replied_message_text(update)}"
+    input_text = f"esprimi una critica su questo testo. Sii molto severo\n\n{get_replied_message_text(update)}"
     print("input:", input_text)
     print(update.message)
     if get_replied_message_text(update):
