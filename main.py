@@ -75,16 +75,10 @@ def chat_gpt_output_parser(prompt: str, update: Update, context: CallbackContext
     reply = update.message.reply_text("Sto scrivendo...")
     gpt_out = []
     chat_gpt_reply = chatbot.ask(prompt)
-    msg = ""
     for idx, data in enumerate(chat_gpt_reply):
         gpt_out.append(data)
-        if "continuazione" in prompt:
-            start_msg = prompt.split("\n\n")[1]
-            msg = f"{''.join(gpt_out)}"
-        else:
-            msg = "".join(gpt_out)
-        msg = (msg, "".join(gpt_out))[0]
-        # msg = "".join(list(msg))
+        # print(gpt_out)
+    msg = "".join(gpt_out)
     print(msg)
     context.bot.editMessageText(chat_id=update.message.chat_id,
                                                 message_id=reply.message_id,
@@ -167,7 +161,6 @@ def parere_chatGPT(update: Update, context: CallbackContext):
 def summarize(update: Update, context: CallbackContext, mode: str = "rules"):  # "ml" / "rules"
     input_text = f"riassumi questo testo\n\n{get_replied_message_text(update)}"
     print("input:", input_text)
-    print(update.message)
     if update.message.from_user["id"] != 1748826398:
         chat_gpt_output_parser(input_text, update, context)
     else:
