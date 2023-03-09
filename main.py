@@ -164,6 +164,20 @@ def parere_chatGPT(update: Update, context: CallbackContext):
         update.message.reply_text("Rispondi al messaggio su cui vuoi in parere con /parere")
 
 
+def summarize(update: Update, context: CallbackContext, mode: str = "rules"):  # "ml" / "rules"
+    input_text = f"riassumi questo testo\n\n{get_replied_message_text(update)}"
+    print("input:", input_text)
+    print(update.message)
+    if update.message.from_user["id"] != 1748826398:
+        chat_gpt_output_parser(input_text, update, context)
+    else:
+        time_is_valid = check_time(16, 18)
+        if time_is_valid:
+            chat_gpt_output_parser(input_text, update, context)
+        else:
+            update.message.reply_text("Lorenzo hai rotto")
+
+
 def main():
     """starting bot"""
     updater = Updater(TELE_TOKEN, use_context=True)
@@ -173,6 +187,7 @@ def main():
     # registering commands
     dp.add_handler(CommandHandler("continuatu", continua_tu_chatGPT))
     dp.add_handler(CommandHandler("parere", parere_chatGPT))
+    dp.add_handler(CommandHandler("riassunto", summarize))
 
     # starting the bot
     updater.start_polling()
