@@ -71,14 +71,14 @@ def check_time(from_: int, to: int):
         return False
 
 
-def chat_gpt_output_parser(prompt: str, update: Update, context: CallbackContext):
+def chat_gpt_output_parser(prompt: str, update: Update, context: CallbackContext, input_sentence=""):
     reply = update.message.reply_text("Sto scrivendo...")
     gpt_out = []
     chat_gpt_reply = chatbot.ask(prompt)
     for idx, data in enumerate(chat_gpt_reply):
         gpt_out.append(data)
-        # print(gpt_out)
-    msg = "".join(gpt_out)
+        print(gpt_out)
+    msg = f'{input_sentence} {"".join(gpt_out)}'
     print(msg)
     context.bot.editMessageText(chat_id=update.message.chat_id,
                                                 message_id=reply.message_id,
@@ -119,11 +119,11 @@ def continua_tu_chatGPT(update: Update, context: CallbackContext):
 
         print(prompt)
         if update.message.from_user["id"] != 1748826398:
-            chat_gpt_output_parser(prompt, update, context)
+            chat_gpt_output_parser(prompt, update, context, input_sentence=input_sentence)
         else:
             time_is_valid = check_time(16, 18)
             if time_is_valid:
-                chat_gpt_output_parser(prompt, update, context)
+                chat_gpt_output_parser(prompt, update, context, input_sentence=input_sentence)
             else:
                 update.message.reply_text("Lorenzo hai rotto")
 
