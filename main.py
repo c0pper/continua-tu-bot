@@ -112,9 +112,9 @@ def continua_tu_chatGPT(update: Update, context: CallbackContext):
     input_sentence = get_replied_message_text(update)
 
     if len(input_sentence.split()) > MIN_TEXT_LEN:  # il testo è incluso dopo il comando
-        if input_sentence[-3:] == "...":
-            input_sentence = input_sentence[:-3]
-        input_sentence = input_sentence.split(' ', 1)[1]
+        # if input_sentence[-3:] == "...":
+        #     input_sentence = input_sentence[:-3]
+        # input_sentence = input_sentence.split(' ', 1)[1]
         prompt = f"Scrivi una continuazione di questo testo\n\n{input_sentence}"
 
         print(prompt)
