@@ -139,8 +139,7 @@ def continua_tu_chatGPT(update: Update, context: CallbackContext):
                 update.message.reply_text("Lorenzo hai rotto")
 
     else:  # è stato scritto solo il comando
-        update.message.reply_text("Uso del bot:")
-        update.message.reply_text("'/continuatu Sono andato in bagno, quando all'improvviso'")
+        update.message.reply_text("Rispondi a un messaggio con il comando /continuatu")
 
 
 def get_replied_message_text(update: Update):
