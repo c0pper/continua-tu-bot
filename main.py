@@ -24,6 +24,7 @@ MIN_TEXT_LEN = 3
 
 chatbot = Chatbot(api_key=os.environ.get('chatgpt_apikey'))
 
+
 # def generate_text(input_sentence):
 #     output = text_generator(
 #         input_sentence,
@@ -77,28 +78,38 @@ def chat_gpt_output_parser(prompt: str, update: Update, context: CallbackContext
     chat_gpt_reply = chatbot.ask(prompt)
     for idx, data in enumerate(chat_gpt_reply):
         gpt_out.append(data)
-        print(gpt_out)
+        # print(gpt_out)
     msg = f'{input_sentence} {"".join(gpt_out)}'
+
+    while not msg.endswith("."):
+        print(msg)
+        continuazione = chatbot.ask(f"continua questo testo fino alla fine\n\n{msg}")
+        for idx, data in enumerate(continuazione):
+            gpt_out.append(data)
+        msg = msg + continuazione
+        context.bot.editMessageText(chat_id=update.message.chat_id,
+                                    message_id=reply.message_id,
+                                    text=msg)
     print(msg)
     context.bot.editMessageText(chat_id=update.message.chat_id,
-                                                message_id=reply.message_id,
-                                                text=msg)
-        # if idx % 199 == 0:
-        #     print(idx, len(chat_gpt_reply))
-        #     try:
-        #         context.bot.editMessageText(chat_id=update.message.chat_id,
-        #                                     message_id=reply.message_id,
-        #                                     text=msg)
-        #     except telegram.error.BadRequest:
-        #         pass
-        #
-        #     if idx <= len(chat_gpt_reply):
-        #         try:
-        #             context.bot.editMessageText(chat_id=update.message.chat_id,
-        #                                         message_id=reply.message_id,
-        #                                         text=msg)
-        #         except telegram.error.BadRequest:
-        #             pass
+                                message_id=reply.message_id,
+                                text=msg)
+    # if idx % 199 == 0:
+    #     print(idx, len(chat_gpt_reply))
+    #     try:
+    #         context.bot.editMessageText(chat_id=update.message.chat_id,
+    #                                     message_id=reply.message_id,
+    #                                     text=msg)
+    #     except telegram.error.BadRequest:
+    #         pass
+    #
+    #     if idx <= len(chat_gpt_reply):
+    #         try:
+    #             context.bot.editMessageText(chat_id=update.message.chat_id,
+    #                                         message_id=reply.message_id,
+    #                                         text=msg)
+    #         except telegram.error.BadRequest:
+    #             pass
     # try:
     #     context.bot.editMessageText(chat_id=update.message.chat_id,
     #                                 message_id=reply.message_id,
