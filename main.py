@@ -81,7 +81,7 @@ def chat_gpt_output_parser(prompt: str, update: Update, context: CallbackContext
         # print(gpt_out)
     msg = f'{input_sentence} {"".join(gpt_out)}'
 
-    while not msg.endswith("."):
+    while not msg.endswith((".", "!", "?")):
         print(msg)
         continuazione = chatbot.ask(f"continua questo testo fino alla fine\n\n{msg}")
         for idx, data in enumerate(continuazione):
