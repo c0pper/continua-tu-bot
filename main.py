@@ -153,7 +153,7 @@ def get_replied_message_text(update: Update):
 
 
 def parere_chatGPT(update: Update, context: CallbackContext):
-    input_text = f"esprimi una critica su questo testo. Sii molto severo\n\n{get_replied_message_text(update)}"
+    input_text = f"esprimi una critica su questo testo:\n\n{get_replied_message_text(update)}"
     print("input:", input_text)
     print(update.message)
     if get_replied_message_text(update):
