@@ -74,18 +74,13 @@ def check_time(from_: int, to: int):
 
 def chat_gpt_output_parser(prompt: str, update: Update, context: CallbackContext, input_sentence=""):
     reply = update.message.reply_text("Sto scrivendo...")
-    gpt_out = []
-    chat_gpt_reply = chatbot.ask(prompt)
-    for idx, data in enumerate(chat_gpt_reply):
-        gpt_out.append(data)
-        # print(gpt_out)
+    gpt_out = [data for data in chatbot.ask(prompt)]
     msg = f'{input_sentence} {"".join(gpt_out)}'
 
     while not msg.endswith((".", "!", "?")):
         print(msg)
         continuazione = chatbot.ask(f"continua questo testo fino alla fine\n\n{msg}")
-        for idx, data in enumerate(continuazione):
-            gpt_out.append(data)
+        gpt_out.extend(continuazione)
         msg = msg + continuazione
         context.bot.editMessageText(chat_id=update.message.chat_id,
                                     message_id=reply.message_id,
