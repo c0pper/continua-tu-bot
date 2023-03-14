@@ -73,6 +73,18 @@ def check_time(from_: int, to: int):
 
 
 def chat_gpt_output_parser(prompt: str, update: Update, context: CallbackContext, input_sentence=""):
+    """
+    Generates a chatbot response to a given prompt and sends it as a reply to the user.
+
+    Args:
+    - prompt (str): The text prompt for the chatbot.
+    - update (telegram.Update): The update object containing the message.
+    - context (telegram.ext.CallbackContext): The context object for the bot.
+    - input_sentence (str, optional): The text input from the user to be continued.
+
+    Returns:
+    - None
+    """
     reply = update.message.reply_text("Sto scrivendo...")
     gpt_out = [data for data in chatbot.ask(prompt)]
     msg = f'{input_sentence} {"".join(gpt_out)}'
@@ -114,6 +126,12 @@ def chat_gpt_output_parser(prompt: str, update: Update, context: CallbackContext
 
 
 def continua_tu_chatGPT(update: Update, context: CallbackContext):
+    """
+    Handler for the /continuatu command. Generates a prompt to continue a given text.
+
+    :param update: `telegram.Update` object representing an incoming update from Telegram.
+    :param context: `telegram.ext.CallbackContext` object provided by the `telegram.ext` module.
+    """
     # input_sentence = update.message.text
     input_sentence = get_replied_message_text(update)
 
@@ -137,8 +155,16 @@ def continua_tu_chatGPT(update: Update, context: CallbackContext):
         update.message.reply_text("Rispondi a un messaggio con il comando /continuatu")
 
 
-def get_replied_message_text(update: Update):
-    """Handler for /start command"""
+def get_replied_message_text(update: Update) -> str:
+    """
+    Get the text of the message that the user replied to, if any.
+
+    :param update: the update object containing the user's message
+    :type update: Update
+
+    :return: the text of the replied message, or an empty string if no message was replied to
+    :rtype: str
+    """
     if update.message.reply_to_message:
         input_text = update.message.reply_to_message["text"]
     else:
@@ -146,10 +172,21 @@ def get_replied_message_text(update: Update):
     return input_text
 
 
+
 def parere_chatGPT(update: Update, context: CallbackContext):
+    """
+    Handler for the /parere command. Generates a prompt for the user to express a criticism of a given message, then
+    passes it to the GPT-3 chatbot for generating a response.
+
+    Args:
+        update (:class:`telegram.Update`): The update object containing information about the incoming message.
+        context (:class:`telegram.ext.CallbackContext`): The context object for handling the callback.
+
+    Returns:
+        None
+    """
     input_text = f"esprimi una critica su questo testo:\n\n{get_replied_message_text(update)}"
-    print("input:", input_text)
-    print(update.message)
+
     if get_replied_message_text(update):
         if update.message.from_user["id"] != 1748826398:
             chat_gpt_output_parser(input_text, update, context)
@@ -163,7 +200,22 @@ def parere_chatGPT(update: Update, context: CallbackContext):
         update.message.reply_text("Rispondi al messaggio su cui vuoi in parere con /parere")
 
 
+
 def summarize(update: Update, context: CallbackContext, mode: str = "rules"):  # "ml" / "rules"
+    """
+    This function takes an Update and a CallbackContext object, and an optional mode string (defaulting to "rules")
+    as input. It summarizes the text of the message replied to using the get_replied_message_text function and passes
+    it to chat_gpt_output_parser for summarization. If the user is Lorenzo, the function will only work if the time
+    is between 16:00 and 18:00. This function doesn't return anything, it just sends the summarized text as a reply.
+
+    Args:
+        update (telegram.Update): The update object.
+        context (telegram.ext.CallbackContext): The context object.
+        mode (str, optional): The summarization mode, either "rules" or "ml". Defaults to "rules".
+
+    Returns:
+        None
+    """
     input_text = f"riassumi questo testo\n\n{get_replied_message_text(update)}"
     print("input:", input_text)
     if update.message.from_user["id"] != 1748826398:
