@@ -1,14 +1,7 @@
 import logging
-import os
-import datetime
-import pytz
-
 import telegram.error
-from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
-from telegram.ext import Updater, Dispatcher, CommandHandler, MessageHandler, Filters, CallbackContext, \
-    ConversationHandler
-# from text_generation import tokenizer, model, text_generator, prompt
-from revChatGPT.V3 import Chatbot
+from telegram.ext import Updater, CommandHandler
+
 from utils import *
 
 # Enable logging
