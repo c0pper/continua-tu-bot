@@ -125,7 +125,7 @@ def summarize(update: Update, context: CallbackContext, mode: str = "rules"):  #
 
 
 def key_points(update: Update, context: CallbackContext):
-    input_text = f"Riporta in una lista i punti chiave di questo testo\n\n{get_replied_message_text(update)}"
+    input_text = f"Riporta in una lista i punti chiave di questo testo in lingua italiana\n\n{get_replied_message_text(update)}"
     print("input:", input_text)
     if update.message.from_user["id"] != id_valitutto:
         chat_gpt_output_parser(input_text, update, context)
