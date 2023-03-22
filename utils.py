@@ -1,7 +1,15 @@
+from telegram import Update
+from telegram.ext import CallbackContext
+import pytz
+import datetime
+from revChatGPT.V3 import Chatbot
+import os
+
 id_valitutto = 1748826398
 start_time_valitutto = 16
 end_time_valitutto = 18
 
+chatbot = Chatbot(api_key=os.environ.get('chatgpt_apikey'))
 
 def check_time(from_: int, to: int):
     # Set the timezone to Europe/Rome
@@ -35,6 +43,7 @@ def chat_gpt_output_parser(prompt: str, update: Update, context: CallbackContext
     reply = update.message.reply_text("Sto scrivendo...")
     gpt_out = [data for data in chatbot.ask(prompt)]
     msg = f'{input_sentence} {"".join(gpt_out)}'
+    print(msg)
 
     while not msg.endswith((".", "!", "?")):
         print(msg)
@@ -44,6 +53,8 @@ def chat_gpt_output_parser(prompt: str, update: Update, context: CallbackContext
         context.bot.editMessageText(chat_id=update.message.chat_id,
                                     message_id=reply.message_id,
                                     text=msg)
+    if "lista" in update.message.text:
+        msg = msg.replace(".", ".\n\n")
     print(msg)
     context.bot.editMessageText(chat_id=update.message.chat_id,
                                 message_id=reply.message_id,

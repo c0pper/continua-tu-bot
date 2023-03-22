@@ -23,7 +23,7 @@ TELE_TOKEN = os.environ.get('TELE_TOKEN')
 SENTENCE = range(1)
 MIN_TEXT_LEN = 3
 
-chatbot = Chatbot(api_key=os.environ.get('chatgpt_apikey'))
+
 
 
 # Define Command Handlers
