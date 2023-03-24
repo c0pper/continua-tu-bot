@@ -50,37 +50,15 @@ def chat_gpt_output_parser(prompt: str, update: Update, context: CallbackContext
         continuazione = chatbot.ask(f"continua questo testo fino alla fine\n\n{msg}")
         gpt_out.extend(continuazione)
         msg = msg + continuazione
-        context.bot.editMessageText(chat_id=update.message.chat_id,
-                                    message_id=reply.message_id,
-                                    text=msg)
+        # context.bot.editMessageText(chat_id=update.message.chat_id,
+        #                             message_id=reply.message_id,
+        #                             text=msg)
     if "lista" in update.message.text:
         msg = msg.replace(".", ".\n\n")
     print(msg)
     context.bot.editMessageText(chat_id=update.message.chat_id,
                                 message_id=reply.message_id,
                                 text=msg)
-    # if idx % 199 == 0:
-    #     print(idx, len(chat_gpt_reply))
-    #     try:
-    #         context.bot.editMessageText(chat_id=update.message.chat_id,
-    #                                     message_id=reply.message_id,
-    #                                     text=msg)
-    #     except telegram.error.BadRequest:
-    #         pass
-    #
-    #     if idx <= len(chat_gpt_reply):
-    #         try:
-    #             context.bot.editMessageText(chat_id=update.message.chat_id,
-    #                                         message_id=reply.message_id,
-    #                                         text=msg)
-    #         except telegram.error.BadRequest:
-    #             pass
-    # try:
-    #     context.bot.editMessageText(chat_id=update.message.chat_id,
-    #                                 message_id=reply.message_id,
-    #                                 text=msg)
-    # except telegram.error.BadRequest:
-    #     pass
 
 
 def get_replied_message_text(update: Update) -> str:
