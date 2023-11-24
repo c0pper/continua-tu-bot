@@ -51,9 +51,9 @@ def chat_gpt_output_parser(prompt: str, update: Update, context: CallbackContext
     Returns:
     - None
     """
-    reply = update.message.reply_text("Sto scrivendo...")
 
     try:
+        reply = update.message.reply_text("Sto scrivendo...")
         chat_completion = client.chat.completions.create(
             messages=[
                 system_message,
@@ -67,17 +67,8 @@ def chat_gpt_output_parser(prompt: str, update: Update, context: CallbackContext
         gpt_out = chat_completion.choices[0].message.content
         msg = f'{input_sentence} {gpt_out}'
 
-        # while not msg.endswith((".", "!", "?")):
-        #     print(msg)
-        #     continuazione = chatbot.ask(f"continua questo testo fino alla fine\n\n{msg}")
-        #     gpt_out.extend(continuazione)
-        #     msg = msg + continuazione
-        #     # context.bot.editMessageText(chat_id=update.message.chat_id,
-        #     #                             message_id=reply.message_id,
-        #     #                             text=msg)
-        # if "lista" in update.message.text:
-        #     msg = msg.replace(".", ".\n\n")
-        print(msg)
+        print(f"########\nPROMPT:\n{prompt}")
+        print(f"################\n\nRESPONSE:\n{msg}\n\n\n")
         context.bot.editMessageText(chat_id=update.message.chat_id,
                                     message_id=reply.message_id,
                                     text=msg)
