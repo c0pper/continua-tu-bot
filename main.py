@@ -67,11 +67,10 @@ def continua_tu_chatGPT(update: Update, context: CallbackContext):
             # if input_sentence[-3:] == "...":
             #     input_sentence = input_sentence[:-3]
             # input_sentence = input_sentence.split(' ', 1)[1]
-            prompt = f"Scrivi una continuazione di questo testo:" \
-                     f"\n\n{input_sentence}\n\n" \
-                     f"Ricorda di renderla incoerente, usare a sproposito 'allora' e usare sempre il tempo passato remoto"
+            prompt = f'Scrivi una continuazione di questo testo:' \
+                     f'\n\n"{input_sentence}"\n\n' \
+                     f'Ricorda di renderla incoerente, usare a sproposito "allora" e usare sempre il tempo passato remoto'
 
-            print(prompt)
             if update.message.from_user["id"] == VALITUTTO_ID:
                 if valitutto_allowed:
                     chat_gpt_output_parser(prompt, update, context, input_sentence=input_sentence)
