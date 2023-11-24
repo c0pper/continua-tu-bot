@@ -2,14 +2,25 @@ from telegram import Update
 from telegram.ext import CallbackContext
 import pytz
 import datetime
-from revChatGPT.V3 import Chatbot
 import os
+from openai import OpenAI
+import traceback
 
 id_valitutto = 1748826398
 start_time_valitutto = 16
 end_time_valitutto = 18
 
-chatbot = Chatbot(api_key=os.environ.get('chatgpt_apikey'))
+client = OpenAI(
+    # defaults to os.environ.get("OPENAI_API_KEY")
+    api_key=os.getenv("chatgpt_apikey"),
+)
+
+system_message = {
+            "role": "system",
+            "content": """Sei Lorenzo Valitutto, bambino autistico che crede di essere un grande poeta e scrittore. 
+            Vivi nelle campagne di Sicignano degli Alburni. 
+            Hai una fantasia vivida ma scrivi storie inconcludenti, usi sempre il passato remoto e fai uso spropositato di 'allora'."""
+        }
 
 def check_time(from_: int, to: int):
     # Set the timezone to Europe/Rome
@@ -41,24 +52,40 @@ def chat_gpt_output_parser(prompt: str, update: Update, context: CallbackContext
     - None
     """
     reply = update.message.reply_text("Sto scrivendo...")
-    gpt_out = [data for data in chatbot.ask(prompt)]
-    msg = f'{input_sentence} {"".join(gpt_out)}'
-    print(msg)
 
-    while not msg.endswith((".", "!", "?")):
+    try:
+        chat_completion = client.chat.completions.create(
+            messages=[
+                system_message,
+                {
+                    "role": "user",
+                    "content": prompt,
+                }
+            ],
+            model="gpt-3.5-turbo",
+        )
+        gpt_out = chat_completion.choices[0].message.content
+        msg = f'{input_sentence} {gpt_out}'
+
+        # while not msg.endswith((".", "!", "?")):
+        #     print(msg)
+        #     continuazione = chatbot.ask(f"continua questo testo fino alla fine\n\n{msg}")
+        #     gpt_out.extend(continuazione)
+        #     msg = msg + continuazione
+        #     # context.bot.editMessageText(chat_id=update.message.chat_id,
+        #     #                             message_id=reply.message_id,
+        #     #                             text=msg)
+        # if "lista" in update.message.text:
+        #     msg = msg.replace(".", ".\n\n")
         print(msg)
-        continuazione = chatbot.ask(f"continua questo testo fino alla fine\n\n{msg}")
-        gpt_out.extend(continuazione)
-        msg = msg + continuazione
-        # context.bot.editMessageText(chat_id=update.message.chat_id,
-        #                             message_id=reply.message_id,
-        #                             text=msg)
-    if "lista" in update.message.text:
-        msg = msg.replace(".", ".\n\n")
-    print(msg)
-    context.bot.editMessageText(chat_id=update.message.chat_id,
-                                message_id=reply.message_id,
-                                text=msg)
+        context.bot.editMessageText(chat_id=update.message.chat_id,
+                                    message_id=reply.message_id,
+                                    text=msg)
+    except Exception:
+        msg = f"Errore: {traceback.format_exc()}"
+        context.bot.editMessageText(chat_id=update.message.chat_id,
+                                    message_id=reply.message_id,
+                                    text=msg)
 
 
 def get_replied_message_text(update: Update) -> str:

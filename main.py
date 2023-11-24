@@ -15,9 +15,7 @@ TELE_TOKEN = os.environ.get('TELE_TOKEN')
 
 SENTENCE = range(1)
 MIN_TEXT_LEN = 3
-
-
-
+VALITUTTO_ID = 1748826398
 
 # Define Command Handlers
 # def continua_tu(update: Update, context: CallbackContext):
@@ -37,6 +35,22 @@ MIN_TEXT_LEN = 3
 #         update.message.reply_text("'/continuatu Sono andato in bagno, quando all'improvviso'")
 
 
+def is_in_valitutto_chat(chat_id):
+    if chat_id == -1001584372437:
+        return True
+    else:
+        False
+
+
+def is_valitutto_allowed(update):
+    if update.message.from_user["id"] == VALITUTTO_ID:
+        time_is_valid = check_time(16, 18)
+        if time_is_valid:
+            return True
+        else:
+            return False
+
+
 def continua_tu_chatGPT(update: Update, context: CallbackContext):
     """
     Handler for the /continuatu command. Generates a prompt to continue a given text.
@@ -44,28 +58,31 @@ def continua_tu_chatGPT(update: Update, context: CallbackContext):
     :param update: `telegram.Update` object representing an incoming update from Telegram.
     :param context: `telegram.ext.CallbackContext` object provided by the `telegram.ext` module.
     """
-    # input_sentence = update.message.text
-    input_sentence = get_replied_message_text(update)
+    if is_in_valitutto_chat(update.message.chat_id):
+        valitutto_allowed = is_valitutto_allowed(update)
+        # input_sentence = update.message.text
+        input_sentence = get_replied_message_text(update)
 
-    if len(input_sentence.split()) > MIN_TEXT_LEN:  # il testo è incluso dopo il comando
-        # if input_sentence[-3:] == "...":
-        #     input_sentence = input_sentence[:-3]
-        # input_sentence = input_sentence.split(' ', 1)[1]
-        prompt = f"Scrivi una continuazione di questo testo\n\n{input_sentence}"
+        if len(input_sentence.split()) > MIN_TEXT_LEN:  # il testo è incluso dopo il comando
+            # if input_sentence[-3:] == "...":
+            #     input_sentence = input_sentence[:-3]
+            # input_sentence = input_sentence.split(' ', 1)[1]
+            prompt = f"Scrivi una continuazione di questo testo:" \
+                     f"\n\n{input_sentence}\n\n" \
+                     f"Ricorda di renderla incoerente, usare a sproposito 'allora' e usare sempre il tempo passato remoto"
 
-        print(prompt)
-        if update.message.from_user["id"] != 1748826398:
-            chat_gpt_output_parser(prompt, update, context, input_sentence=input_sentence)
-        else:
-            time_is_valid = check_time(16, 18)
-            if time_is_valid:
-                chat_gpt_output_parser(prompt, update, context, input_sentence=input_sentence)
+            print(prompt)
+            if update.message.from_user["id"] == VALITUTTO_ID:
+                if valitutto_allowed:
+                    chat_gpt_output_parser(prompt, update, context, input_sentence=input_sentence)
+                else:
+                    update.message.reply_text("Lorenzo hai rotto")
             else:
-                update.message.reply_text("Lorenzo hai rotto")
+                chat_gpt_output_parser(prompt, update, context, input_sentence=input_sentence)
 
-    else:  # è stato scritto solo il comando
-        update.message.reply_text("Rispondi a un messaggio con il comando /continuatu")
 
+        else:  # è stato scritto solo il comando
+            update.message.reply_text("Rispondi a un messaggio con il comando /continuatu")
 
 
 def parere_chatGPT(update: Update, context: CallbackContext):
@@ -80,20 +97,20 @@ def parere_chatGPT(update: Update, context: CallbackContext):
     Returns:
         None
     """
-    input_text = f"esprimi una critica su questo testo:\n\n{get_replied_message_text(update)}"
+    if is_in_valitutto_chat(update.message.chat_id):
+        valitutto_allowed = is_valitutto_allowed(update)
+        input_text = f"esprimi una critica su questo testo:\n\n{get_replied_message_text(update)}"
 
-    if get_replied_message_text(update):
-        if update.message.from_user["id"] != id_valitutto:
-            chat_gpt_output_parser(input_text, update, context)
-        else:
-            time_is_valid = check_time(start_time_valitutto, end_time_valitutto)
-            if time_is_valid:
-                chat_gpt_output_parser(input_text, update, context)
+        if get_replied_message_text(update):
+            if update.message.from_user["id"] == VALITUTTO_ID:
+                if valitutto_allowed:
+                    chat_gpt_output_parser(input_text, update, context)
+                else:
+                    update.message.reply_text("Lorenzo hai rotto")
             else:
-                update.message.reply_text("Lorenzo hai rotto")
-    else:
-        update.message.reply_text("Rispondi al messaggio su cui vuoi in parere con /parere")
-
+                chat_gpt_output_parser(input_text, update, context)
+        else:
+            update.message.reply_text("Rispondi al messaggio su cui vuoi in parere con /parere")
 
 
 def summarize(update: Update, context: CallbackContext, mode: str = "rules"):  # "ml" / "rules"
@@ -111,30 +128,31 @@ def summarize(update: Update, context: CallbackContext, mode: str = "rules"):  #
     Returns:
         None
     """
-    input_text = f"riassumi questo testo\n\n{get_replied_message_text(update)}"
-    print("input:", input_text)
-    if update.message.from_user["id"] != id_valitutto:
-        chat_gpt_output_parser(input_text, update, context)
-    else:
-        time_is_valid = check_time(start_time_valitutto, end_time_valitutto)
-        if time_is_valid:
-            chat_gpt_output_parser(input_text, update, context)
+    if is_in_valitutto_chat(update.message.chat_id):
+        valitutto_allowed = is_valitutto_allowed(update)
+        input_text = f"riassumi questo testo\n\n{get_replied_message_text(update)}"
+        print("input:", input_text)
+        if update.message.from_user["id"] == VALITUTTO_ID:
+            if valitutto_allowed:
+                chat_gpt_output_parser(input_text, update, context)
+            else:
+                update.message.reply_text("Lorenzo hai rotto")
         else:
-            update.message.reply_text("Lorenzo hai rotto")
-
+            chat_gpt_output_parser(input_text, update, context)
 
 
 def key_points(update: Update, context: CallbackContext):
-    input_text = f"Riporta in una lista i punti chiave di questo testo in lingua italiana\n\n{get_replied_message_text(update)}"
-    print("input:", input_text)
-    if update.message.from_user["id"] != id_valitutto:
-        chat_gpt_output_parser(input_text, update, context)
-    else:
-        time_is_valid = check_time(start_time_valitutto, end_time_valitutto)
-        if time_is_valid:
-            chat_gpt_output_parser(input_text, update, context)
+    if is_in_valitutto_chat(update.message.chat_id):
+        valitutto_allowed = is_valitutto_allowed(update)
+        input_text = f"Riporta in una lista i punti chiave di questo testo in lingua italiana\n\n{get_replied_message_text(update)}"
+        print("input:", input_text)
+        if update.message.from_user["id"] == id_valitutto:
+            if valitutto_allowed:
+                chat_gpt_output_parser(input_text, update, context)
+            else:
+                update.message.reply_text("Lorenzo hai rotto")
         else:
-            update.message.reply_text("Lorenzo hai rotto")
+            chat_gpt_output_parser(input_text, update, context)
 
 
 def main():
