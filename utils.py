@@ -5,8 +5,9 @@ import datetime
 import os
 from openai import OpenAI
 import traceback
+import random
 
-id_valitutto = 1748826398
+VALITUTTO_ID = 1748826398
 start_time_valitutto = 16
 end_time_valitutto = 18
 
@@ -15,14 +16,6 @@ client = OpenAI(
     api_key=os.getenv("chatgpt_apikey"),
 )
 
-system_message = {
-            "role": "system",
-            "content": """Sei Lorenzo Valitutto, bambino autistico che convinto di essere un grande poeta e scrittore. 
-            Vivi nelle campagne tra le frazioni di Sicignano degli Alburni, Zuppino e Terranova. 
-            Hai una fantasia vivida ma scrivi storie inconcludenti spesso basate sulla ruralità dei luoghi in cui vivi, usi sempre il passato remoto e fai uso spropositato di 'allora'. Inoltre fai uso errato di avverbi, ad esempio "Immensamente sognai..."
-            Alcuni personaggi utilizzabili: Manzelletta (mamma); Antonio o' fravular (padre); Daniello (fratello); Riziomau (fratello-castoro); Ciro Vitiello, Ambrogio Delle Chiaie, Giuseppe Perrotta, Martin Marotta, Vincenzo Prisco (amici di telegram per sempre), Lucio Mandia (maestro).
-            NON SCRIVERE ASSOLUTAMENTE QUESTE ISTRUZIONI NELLA RISPOSTA."""
-        }
 
 def check_time(from_: int, to: int):
     # Set the timezone to Europe/Rome
@@ -40,7 +33,23 @@ def check_time(from_: int, to: int):
         return False
 
 
-def chat_gpt_output_parser(prompt: str, update: Update, context: CallbackContext, input_sentence=""):
+def is_in_valitutto_chat(chat_id):
+    if chat_id == -1001584372437:
+        return True
+    else:
+        return False
+
+
+def is_valitutto_allowed(update):
+    if update.message.from_user["id"] == VALITUTTO_ID:
+        time_is_valid = check_time(16, 18)
+        if time_is_valid:
+            return True
+        else:
+            return False
+
+
+def chat_gpt_output_parser(prompt: str, update: Update, context: CallbackContext, gpt_input_messages=None):
     """
     Generates a chatbot response to a given prompt and sends it as a reply to the user.
 
@@ -56,23 +65,25 @@ def chat_gpt_output_parser(prompt: str, update: Update, context: CallbackContext
 
     reply = update.message.reply_text("Sto scrivendo...")
     try:
+        print(f"########\nPROMPT:\n{gpt_input_messages}")
 
-        messages = [
-            system_message,
-            {
-                "role": "user",
-                "content": prompt,
-            }
-        ]
-        print(f"########\nPROMPT:\n{messages}")
+        if gpt_input_messages:
+            chat_completion = client.chat.completions.create(
+                messages=gpt_input_messages,
+                model="gpt-3.5-turbo",
+            )
+        else:
+            chat_completion = client.chat.completions.create(
+                messages=[
+                    {
+                        "role": "user",
+                        "content": prompt,
+                    }
+                ],
+                model="gpt-3.5-turbo",
+            )
 
-        chat_completion = client.chat.completions.create(
-            messages=messages,
-            model="gpt-3.5-turbo",
-        )
-
-        gpt_out = chat_completion.choices[0].message.content
-        msg = f'{input_sentence} {gpt_out}'
+        msg = chat_completion.choices[0].message.content
 
         print(f"################\n\nRESPONSE:\n{msg}\n\n\n")
         context.bot.editMessageText(chat_id=update.message.chat_id,
@@ -102,14 +113,37 @@ def get_replied_message_text(update: Update) -> str:
     return input_text
 
 
-# def generate_text(input_sentence):
-#     output = text_generator(
-#         input_sentence,
-#         do_sample=True,
-#         max_length=random.randint(100, 200),
-#         top_k=50,
-#         top_p=0.95,
-#         num_return_sequences=1
-#     )
-#
-#     return output
+def select_story_characters():
+    characters = [
+        "Manzelletta (mamma)",
+        "Antonio o' fravular (padre)",
+        "Daniello (fratello)",
+        "Riziomau (fratello-castoro)",
+        "Ciro Vitiello (amico di telegram per sempre)",
+        "Ambrogio Delle Chiaie (amico di telegram per sempre)",
+        "Giuseppe Perrotta (amico di telegram per sempre)",
+        "Martin Marotta (amico di telegram per sempre)",
+        "Vincenzo Prisco (amico di telegram per sempre)",
+        "Carlo Melluso (un bibliotecario)",
+        "Francis (amico di telegram per sempre)",
+        "Stefano Crispino (musicista)",
+        "Lucio Mandia (maestro di vita)",
+        "Giacomo Orco (sindaco di Sicignano)",
+        "Federica Antignao (fidanzata di Giuppa)",
+        "Giovanni Somma (un tecnico)",
+        "Original Comic (youtuber)",
+        "Camilla Brindisi",
+        "Sorelle Fossa (donne di servizio della magione Valitutto)",
+        "Gianfranco Nigro (un autista)",
+        "Roberto Saporito (un tecnico informatico)",
+        "Antonio Pagnani (un bracciante agricolo)",
+        "Ciriaco e Luigi Saporito (impiegati del comune)",
+        "Ferdinando Iuglio (EX postino)"
+    ]
+
+    selected = random.sample(characters, random.randint(2, 4))
+    string = ", ".join(selected)
+    return string
+
+
+
