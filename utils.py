@@ -129,7 +129,7 @@ def select_story_characters():
         "Stefano Crispino (musicista)",
         "Lucio Mandia (maestro di vita)",
         "Giacomo Orco (sindaco di Sicignano)",
-        "Federica Antignao (fidanzata di Giuppa)",
+        "Federica Antignano (fidanzata di Giuppa)",
         "Giovanni Somma (un tecnico)",
         "Original Comic (youtuber)",
         "Camilla Brindisi",
