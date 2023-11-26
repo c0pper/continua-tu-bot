@@ -133,12 +133,14 @@ def select_story_characters():
         "Giovanni Somma (un tecnico)",
         "Original Comic (youtuber)",
         "Camilla Brindisi",
-        "Sorelle Fossa (donne di servizio della magione Valitutto)",
+        "Olimpia e Katia Fossa (donne di servizio della magione Valitutto)",
         "Gianfranco Nigro (un autista)",
         "Roberto Saporito (un tecnico informatico)",
         "Antonio Pagnani (un bracciante agricolo)",
         "Ciriaco e Luigi Saporito (impiegati del comune)",
-        "Ferdinando Iuglio (EX postino)"
+        "Ferdinando Iuglio (EX postino)",
+        "Bamba il Bambalese",
+        "Serafino il Bambalese"
     ]
 
     selected = random.sample(characters, random.randint(2, 4))
