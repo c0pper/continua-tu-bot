@@ -166,18 +166,17 @@ def update_call_count(data):
 
 
 def is_valitutto_allowed_count(update):
-    if update.message.from_user["id"] == VALITUTTO_ID:
-        today = datetime.date.today().strftime("%Y-%m-%d")
-        call_count = get_call_count()
+    today = datetime.date.today().strftime("%Y-%m-%d")
+    call_count = get_call_count()
 
-        if today != call_count["date"]:
-            # Reset count for a new day
-            update_call_count({"date": today, "count": 0})
-            return True, call_count["count"]
-        elif call_count["count"] < max_stories:
-            # Increment count for the same day
-            update_call_count({"date": today, "count": call_count["count"] + 1})
-            return True, call_count["count"]
-        else:
-            return False, call_count["count"]
+    if today != call_count["date"]:
+        # Reset count for a new day
+        update_call_count({"date": today, "count": 0})
+        return True, call_count["count"]
+    elif call_count["count"] < max_stories:
+        # Increment count for the same day
+        update_call_count({"date": today, "count": call_count["count"] + 1})
+        return True, call_count["count"]
+    else:
+        return False, call_count["count"]
 
