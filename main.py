@@ -51,7 +51,7 @@ def continua_tu_chatGPT(update: Update, context: CallbackContext):
             ]
 
             if update.message.from_user["id"] == VALITUTTO_ID:
-                if valitutto_allowed[0]:
+                if valitutto_allowed:
                     chat_gpt_output_parser(prompt, update, context, gpt_input_messages=gpt_messages)
                 else:
                     update.message.reply_text(f"Lorenzo hai rotto se ne parla domani")
