@@ -23,7 +23,7 @@ def continua_tu_chatGPT(update: Update, context: CallbackContext):
     :param context: `telegram.ext.CallbackContext` object provided by the `telegram.ext` module.
     """
     if is_in_valitutto_chat(update.message.chat_id):
-        valitutto_allowed = is_valitutto_allowed(update)
+        valitutto_allowed = is_valitutto_allowed_count(update)[0]
         # input_sentence = update.message.text
         input_sentence = get_replied_message_text(update)
 
@@ -51,10 +51,10 @@ def continua_tu_chatGPT(update: Update, context: CallbackContext):
             ]
 
             if update.message.from_user["id"] == VALITUTTO_ID:
-                if valitutto_allowed:
+                if valitutto_allowed[0]:
                     chat_gpt_output_parser(prompt, update, context, gpt_input_messages=gpt_messages)
                 else:
-                    update.message.reply_text("Lorenzo hai rotto")
+                    update.message.reply_text(f"Lorenzo hai rotto se ne parla domani")
             else:
                 chat_gpt_output_parser(prompt, update, context, gpt_input_messages=gpt_messages)
 
@@ -75,7 +75,7 @@ def parere_chatGPT(update: Update, context: CallbackContext):
         None
     """
     if is_in_valitutto_chat(update.message.chat_id):
-        valitutto_allowed = is_valitutto_allowed(update)
+        valitutto_allowed = is_valitutto_allowed_count(update)[0]
         input_text = f"esprimi una critica su questo testo:\n\n{get_replied_message_text(update)}"
 
         if get_replied_message_text(update):
@@ -106,7 +106,7 @@ def summarize(update: Update, context: CallbackContext, mode: str = "rules"):  #
         None
     """
     if is_in_valitutto_chat(update.message.chat_id):
-        valitutto_allowed = is_valitutto_allowed(update)
+        valitutto_allowed = is_valitutto_allowed(update)[0]
         input_text = f"riassumi questo testo\n\n{get_replied_message_text(update)}"
         print("input:", input_text)
         if update.message.from_user["id"] == VALITUTTO_ID:
@@ -120,7 +120,7 @@ def summarize(update: Update, context: CallbackContext, mode: str = "rules"):  #
 
 def key_points(update: Update, context: CallbackContext):
     if is_in_valitutto_chat(update.message.chat_id):
-        valitutto_allowed = is_valitutto_allowed(update)
+        valitutto_allowed = is_valitutto_allowed_count(update)[0]
         input_text = f"Riporta in una lista i punti chiave di questo testo in lingua italiana\n\n{get_replied_message_text(update)}"
         print("input:", input_text)
         if update.message.from_user["id"] == VALITUTTO_ID:
