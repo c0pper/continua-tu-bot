@@ -143,7 +143,7 @@ def select_story_characters():
         "Serafino il Bambalese"
     ]
 
-    selected = random.sample(characters, random.randint(2, 4))
+    selected = random.sample(characters, random.randint(1, 2))
     string = ", ".join(selected)
     return string
 
