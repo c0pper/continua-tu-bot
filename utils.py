@@ -173,7 +173,7 @@ def is_valitutto_allowed_count(update):
         if today != call_count["date"]:
             # Reset count for a new day
             update_call_count({"date": today, "count": 0})
-            return True
+            return True, call_count["count"]
         elif call_count["count"] < max_stories:
             # Increment count for the same day
             update_call_count({"date": today, "count": call_count["count"] + 1})
