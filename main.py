@@ -154,4 +154,9 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    # main()
+
+    if can_call_function():
+        print("called")
+    else:
+        print("not called")

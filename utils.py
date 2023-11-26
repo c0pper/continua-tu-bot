@@ -6,10 +6,13 @@ import os
 from openai import OpenAI
 import traceback
 import random
+import json
 
-VALITUTTO_ID = 1748826398
+# VALITUTTO_ID = 1748826398
+VALITUTTO_ID = 128727299 #mia
 start_time_valitutto = 16
 end_time_valitutto = 18
+max_stories = 1
 
 client = OpenAI(
     # defaults to os.environ.get("OPENAI_API_KEY")
@@ -148,4 +151,33 @@ def select_story_characters():
     return string
 
 
+def get_call_count():
+    try:
+        with open("call_count.json", "r") as file:
+            data = json.load(file)
+        return data
+    except (FileNotFoundError, json.decoder.JSONDecodeError):
+        return {"date": "", "count": 0}
+
+
+def update_call_count(data):
+    with open("call_count.json", "w") as file:
+        json.dump(data, file)
+
+
+def is_valitutto_allowed_count(update):
+    if update.message.from_user["id"] == VALITUTTO_ID:
+        today = datetime.date.today().strftime("%Y-%m-%d")
+        call_count = get_call_count()
+
+        if today != call_count["date"]:
+            # Reset count for a new day
+            update_call_count({"date": today, "count": 1})
+            return True
+        elif call_count["count"] < max_stories:
+            # Increment count for the same day
+            update_call_count({"date": today, "count": call_count["count"] + 1})
+            return True
+        else:
+            return False
 
