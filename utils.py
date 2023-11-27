@@ -178,5 +178,5 @@ def is_valitutto_allowed_count(update):
         update_call_count({"date": today, "count": call_count["count"] + 1})
         return True, call_count["count"]
     else:
-        return False, call_count["count"]
+        return False, max_stories - call_count["count"]
 
