@@ -23,7 +23,6 @@ def continua_tu_chatGPT(update: Update, context: CallbackContext):
     :param context: `telegram.ext.CallbackContext` object provided by the `telegram.ext` module.
     """
     if is_in_valitutto_chat(update.message.chat_id):
-        valitutto_allowed = is_valitutto_allowed_count(update)[0]
         # input_sentence = update.message.text
         input_sentence = get_replied_message_text(update)
 
@@ -51,8 +50,10 @@ def continua_tu_chatGPT(update: Update, context: CallbackContext):
             ]
 
             if update.message.from_user["id"] == VALITUTTO_ID:
+                valitutto_allowed, stories_left = is_valitutto_allowed_count(update)
                 if valitutto_allowed:
                     chat_gpt_output_parser(prompt, update, context, gpt_input_messages=gpt_messages)
+                    update.message.reply_text(f"Ti restano {stories_left}")
                 else:
                     update.message.reply_text(f"Lorenzo hai rotto se ne parla domani")
             else:
