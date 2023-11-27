@@ -50,12 +50,14 @@ def continua_tu_chatGPT(update: Update, context: CallbackContext):
             ]
 
             if update.message.from_user["id"] == VALITUTTO_ID:
-                valitutto_allowed, stories_left = is_valitutto_allowed_count(update)
-                if valitutto_allowed:
-                    chat_gpt_output_parser(prompt, update, context, gpt_input_messages=gpt_messages)
-                    update.message.reply_text(f"Ti restano {stories_left} continuatu")
-                else:
-                    update.message.reply_text(f"Lorenzo hai rotto se ne parla domani")
+              #  valitutto_allowed, stories_left = is_valitutto_allowed_count(update)
+               # if valitutto_allowed:
+                #    chat_gpt_output_parser(prompt, update, context, gpt_input_messages=gpt_messages)
+                 #   update.message.reply_text(f"Ti restano {stories_left} continuatu")
+               # else:
+                 #   update.message.reply_text(f"Lorenzo hai rotto se ne parla domani")
+                update.message.reply_text(f"Lorenzo addio.")
+
             else:
                 chat_gpt_output_parser(prompt, update, context, gpt_input_messages=gpt_messages)
 
