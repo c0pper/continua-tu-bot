@@ -8,11 +8,11 @@ import traceback
 import random
 import json
 
-# VALITUTTO_ID = 1748826398
-VALITUTTO_ID = 128727299 #mia
+VALITUTTO_ID = 1748826398
+# VALITUTTO_ID = 128727299 #mia
 start_time_valitutto = 16
 end_time_valitutto = 18
-max_stories = 2
+max_stories = 5
 
 client = OpenAI(
     # defaults to os.environ.get("OPENAI_API_KEY")
