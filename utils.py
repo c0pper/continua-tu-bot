@@ -8,11 +8,11 @@ import traceback
 import random
 import json
 
-VALITUTTO_ID = 1748826398
-# VALITUTTO_ID = 128727299 #mia
+# VALITUTTO_ID = 1748826398
+VALITUTTO_ID = 128727299 #mia
 start_time_valitutto = 16
 end_time_valitutto = 18
-max_stories = 5
+max_stories = 2
 
 client = OpenAI(
     # defaults to os.environ.get("OPENAI_API_KEY")
@@ -168,15 +168,16 @@ def update_call_count(data):
 def is_valitutto_allowed_count(update):
     today = datetime.date.today().strftime("%Y-%m-%d")
     call_count = get_call_count()
+    stories_left = max_stories - call_count["count"]
 
     if today != call_count["date"]:
         # Reset count for a new day
         update_call_count({"date": today, "count": 0})
-        return True, call_count["count"]
-    elif call_count["count"] < max_stories:
+        return True, stories_left
+    elif stories_left > 0:
         # Increment count for the same day
         update_call_count({"date": today, "count": call_count["count"] + 1})
-        return True, call_count["count"]
+        return True, stories_left
     else:
-        return False, max_stories - call_count["count"]
+        return False, stories_left
 
